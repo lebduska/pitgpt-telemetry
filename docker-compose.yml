@@ -1,0 +1,28 @@
+services:
+  pitgpt:
+    build: .
+    container_name: pitgpt-telemetry
+    restart: unless-stopped
+    networks:
+      - proxy
+    labels:
+      traefik.enable: "true"
+      # HTTP redirect
+      traefik.http.routers.pitgpt.rule: "Host(`pitgpt.lebduska.com`)"
+      traefik.http.routers.pitgpt.entrypoints: "web"
+      traefik.http.routers.pitgpt.middlewares: "pitgpt-https"
+      # HTTPS
+      traefik.http.routers.pitgpt-secure.rule: "Host(`pitgpt.lebduska.com`)"
+      traefik.http.routers.pitgpt-secure.entrypoints: "websecure"
+      traefik.http.routers.pitgpt-secure.tls: "true"
+      traefik.http.routers.pitgpt-secure.tls.certresolver: "letsencrypt"
+      traefik.http.routers.pitgpt-secure.service: "pitgpt"
+      traefik.http.services.pitgpt.loadbalancer.server.port: "3000"
+      # HTTP->HTTPS redirect
+      traefik.http.middlewares.pitgpt-https.redirectscheme.scheme: "https"
+      traefik.http.middlewares.pitgpt-https.redirectscheme.permanent: "true"
+
+networks:
+  proxy:
+    name: traefik_proxy
+    external: true
