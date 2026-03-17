@@ -1,6 +1,6 @@
 services:
   pitgpt:
-    build: .
+    image: ghcr.io/lebduska/pitgpt-telemetry:latest
     container_name: pitgpt-telemetry
     restart: unless-stopped
     networks:
